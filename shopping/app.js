@@ -1,3 +1,4 @@
+//import require libs
 var express = require('express');
 var validator = require('express-validator');
 var path = require('path');
@@ -6,7 +7,9 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var fileUpload = require('express-fileupload');
+var OAuthServer = require('express-oauth-server');
 
+//routing for each component
 var index = require('./routes/index');
 var inventories = require('./routes/inventories');
 var items = require('./routes/items');
@@ -14,12 +17,21 @@ var categories = require('./routes/categories');
 
 var app = express();
 
+app.oauth = new OAuthServer({
+  model: require('./models'),
+  grants: ['password', ' client_credentials', 'refresh_token'],
+  debug: true,
+  accessTokenLifetime: process.env.NODE_ENV ? null : 1
+});
+
+app.use(app.oauth.errorHandler());
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 // uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 // app.use(bodyParser.raw());
 app.use(bodyParser.json());
