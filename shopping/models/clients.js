@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = function(sequelize, DataTypes) {
-    return sequelize.define('Client', {
+    var Client = sequelize.define('Client', {
         clientId: {
             type: DataTypes.STRING,
             unique: true
@@ -14,5 +14,14 @@ module.exports = function(sequelize, DataTypes) {
         },
         userId: DataTypes.INTEGER,
         redirectUri: DataTypes.STRING
+    }, {
+        timestamps: false,
+        classMethods: {
+            associate: function(models) {
+                // associations can be defined here
+            }
+        }
     });
+
+    return Client;
 };
