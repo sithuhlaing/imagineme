@@ -4,21 +4,22 @@ var validator = require('express-validator');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
-// var cookieParser = require('cookie-parser');
+var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var fileUpload = require('express-fileupload');
 var passport = require('passport');
 var session = require('express-session');
-var morgan = require('morgan');
 
 //routing for each component
 var index = require('./routes/index');
 var inventories = require('./routes/inventories');
 var items = require('./routes/items');
 var categories = require('./routes/categories');
+var users = require('./routes/users');
+var auth = require('./routes/auth');
 
 //load passport stategies
-require('./config/passport')(passport);
+require('./config/passport');
 
 var app = express();
 
@@ -27,10 +28,11 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 
 //log request to console
-app.use(morgan('dev'));
-
-app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
+
+//for fav icon
+app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+
 // app.use(bodyParser.raw());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -40,21 +42,23 @@ app.use(fileUpload({
   preserveExtension: true
 }));
 app.use(validator());
-// app.use(cookieParser());
+app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(session({
-  secret:'keyboard cat',
-  resave: true,
-  saveUninitialized: true 
-}));
-app.use(passport.initialize());
-app.use(passport.session());
+// app.use(session({
+//   secret:'keyboard cat',
+//   resave: true,
+//   saveUninitialized: true 
+// }));
+// app.use(passport.initialize());
+// app.use(passport.session());
 
-app.use('/', index(passport));
-app.use('/inventories', inventories);
-app.use('/items', items);
-app.use('/categories', categories);
+app.use('/', index);
+app.use('/inventories', passport.authenticate('jwt', {session: false}), inventories);
+app.use('/items', passport.authenticate('jwt', {session: false}), items);
+app.use('/categories', passport.authenticate('jwt', {session: false}), categories);
+app.use('/users', passport.authenticate('jwt', {session: false}), users);
+app.use('/auth', auth);
 app.use('/static', express.static('public'));
 
 // catch 404 and forward to error handler

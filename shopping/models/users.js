@@ -14,14 +14,14 @@ module.exports = function(sequelize, DataTypes) {
     lastname  : {
       type          : DataTypes.STRING,
     },
-    username  : {
-      type          : DataTypes.TEXT,
-      // unique: true,
-      // notNull: true
-    },
-    about     : {
-      type          : DataTypes.TEXT
-    },
+    // username  : {
+    //   type          : DataTypes.TEXT,
+    //   // unique: true,
+    //   // notNull: true
+    // },
+    // about     : {
+    //   type          : DataTypes.TEXT
+    // },
     email     : {
       type          : DataTypes.STRING,
       unique        : true,
@@ -32,9 +32,9 @@ module.exports = function(sequelize, DataTypes) {
       type          : DataTypes.STRING,
       allowNull     : false
     },
-    last_login: {
-      type          : DataTypes.DATE
-    },
+    // last_login: {
+    //   type          : DataTypes.DATE
+    // },
     status    : {
       type          : DataTypes.ENUM('active', 'inactive'),
       defaultValue  : 'active'
