@@ -5,9 +5,8 @@ var router = express.Router();
 /* GET inventory listing. */
 router.get('/', function (req, res, next) {
   models.Inventory.findAll({
-    // include: [models.Item]
   }).then(function (inventories) {
-    res.json({ inventories: inventories });
+    res.status(500).json({ inventories: inventories });
   });
 });
 
@@ -22,14 +21,14 @@ router.post('/', function (req, res) {
   var errors = req.validationErrors();
   if (errors) {
     console.log(errors);
-    return res.json(errors);
+    return res.status(400).json(errors);
   } else {
     models.Inventory.create({
       item_id         : req.body.item_id,
       actual_quantity : req.body.actual_quantity,
       min_quantity    : req.body.min_quantity
     }).then(function () {
-      res.json({ status: 'success' });
+      res.status(200).json({ status: 'success' });
     });
   }
 });
@@ -41,7 +40,7 @@ router.delete('/:id', function (req, res) {
       id : req.params.id
     }
   }).then(function () {
-    res.json({ status: 'success' });
+    res.status(200).json({ status: 'success' });
   });
 });
 
@@ -58,9 +57,9 @@ router.put('/:id', function (req, res) {
     }
   ).then(function (result) {
     console.log(result);
-    res.json({ status: 'success' });
+    res.status(200).json({ status: 'success' });
   }).error(function (err) {
-    res.json(err);
+    res.status(500).json(err);
   });
 });
 

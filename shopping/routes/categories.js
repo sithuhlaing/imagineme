@@ -6,7 +6,7 @@ var router = express.Router();
 router.get('/', function(req, res, next) {
   models.Category.findAll({
   }).then(function(categories){
-    res.json({ categories : categories });
+    res.status(200).json({ categories : categories });
   });
 });
 
@@ -16,14 +16,14 @@ router.post('/', function(req, res) {
   // //Run the validators
   var errors = req.validationErrors();
   if(errors){
-    return res.json(errors);
+    return res.status(400).json(errors);
   } else{
     models.Category.create({
       name        : req.body.name,
       description : req.body.description,
       root_id     : req.body.root_id
     }).then(function() {
-      res.json({status : 'success'});
+      res.status(200).json({status : 'success'});
     });
   }
 });
@@ -34,7 +34,7 @@ router.delete('/:id', function(req, res) {
       id: req.params.id
     }
   }).then(function() {
-    res.json({status : 'success'});
+    res.status(200).json({status : 'success'});
   });
 });
 
@@ -49,9 +49,9 @@ router.put('/:id', function(req, res){
   	}
   ).then(function(result) {
   	console.log(result);
-    res.json({status : 'success'});
+    res.status(200).json({status : 'success'});
   }).error(function(err){
-  	res.json(err);
+  	res.status(500).json(err);
   });
 });
 

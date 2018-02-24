@@ -8,7 +8,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var fileUpload = require('express-fileupload');
 var passport = require('passport');
-var session = require('express-session');
+// var session = require('express-session');
 
 //routing for each component
 var index = require('./routes/index');
@@ -24,8 +24,8 @@ require('./config/passport');
 var app = express();
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'pug');
+// app.set('views', path.join(__dirname, 'views'));
+// app.set('view engine', 'pug');
 
 //log request to console
 app.use(logger('dev'));
@@ -68,6 +68,20 @@ app.use(function(req, res, next) {
   next(err);
 });
 
+// function handleError(err,req,res,next){
+//   var output = {
+//       error: {
+//           name: err.name,
+//           message: err.message,
+//           text: err.toString()
+//       }
+//   };
+//   var statusCode = err.status || 500;
+//   res.status(statusCode).json(output);
+// }
+
+// app.use([handleError]);
+
 // error handler
 app.use(function(err, req, res, next) {
   // set locals, only providing error in development
@@ -76,7 +90,7 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  res.json(err);
 });
 
 module.exports = app;

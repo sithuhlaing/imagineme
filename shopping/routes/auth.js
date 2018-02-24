@@ -9,9 +9,8 @@ var bCrypt = require('bcrypt-nodejs');
 
 /* POST login. */
 router.post('/login', function (req, res, next) {
-
     passport.authenticate('local', {session: false}, (err, user, info) => {
-        console.log(err);
+        // console.log(err);
         if (err || !user) {
             return res.status(400).json({
                 message: info ? info.message : 'Login failed',
@@ -21,20 +20,17 @@ router.post('/login', function (req, res, next) {
 
         req.login(user, {session: false}, (err) => {
             if (err) {
-                res.send(err);
+                return res.status(500).json({error : err});
             }
 
             const token = jwt.sign(user, 'your_jwt_secret');
 
-            return res.json({user, token});
+            return res.status(200).json({user, token});
         });
-    })
-    (req, res);
-
+    })(req, res);
 });
 
 router.post('/register', function(req, res, next){
-
     req.checkBody('email', 'email is required').notEmpty();
     req.checkBody('password', 'password is required').notEmpty();
     req.checkBody('firstname', 'firstname is required').notEmpty();
@@ -42,7 +38,7 @@ router.post('/register', function(req, res, next){
     
     var errors = req.validationErrors();
     if(errors) {
-        return res.json(errors);
+        return res.status(400).json(errors);
     } else{
         var generateHash = function(password){
             return bCrypt.hashSync(password, bCrypt.genSaltSync(8), null);
@@ -54,7 +50,7 @@ router.post('/register', function(req, res, next){
             }
         }).then(function(user){
             if(user){
-                res.json({
+                res.status(400).json({
                     message: 'That email is already taken'
                 });
             } else {
@@ -70,9 +66,9 @@ router.post('/register', function(req, res, next){
                 User.create(data)
                     .then(function(newUser, created){
                         if(!newUser){
-                            res.json({status: 'System error'})
+                            res.status(500).json({status: 'System error'})
                         } else {
-                            res.json({user : newUser});
+                            res.status(200).json({user : newUser});
                         }
                 });
             }

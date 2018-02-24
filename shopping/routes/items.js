@@ -7,7 +7,7 @@ var router = express.Router();
 router.get('/', function (req, res, next) {
   models.Item.findAll({
   }).then(function (items) {
-    res.json({ items: items });
+    res.status(200).json({ items: items });
   });
 });
 
@@ -26,7 +26,6 @@ function fileUpload(files, name) {
       if (err)
         return err;
     });
-
     return true;
   } else {
     return false;
@@ -47,7 +46,7 @@ router.post('/', function (req, res) {
   // //Run the validators
   var errors = req.validationErrors();
   if (errors) {
-    return res.json(errors);
+    return res.status(400).json(errors);
   } else {
     async.parallel([
       function (callback) {
@@ -56,7 +55,7 @@ router.post('/', function (req, res) {
 
         file.mv('files/' + file.name, function (err) {
           if (err)
-            return res.json(err);
+            return res.status(500).json(err);
         });
 
         models.Item.create({
@@ -66,7 +65,7 @@ router.post('/', function (req, res) {
           img_url     : 'files/' + file.name,
           category_id : req.body.category_id
         }).then(function () {
-          res.json({ status: 'success' });
+          res.status(200).json({ status: 'success' });
         });
       }
     ]);
@@ -79,17 +78,13 @@ router.delete('/:id', function (req, res) {
       id: req.params.id
     }
   }).then(function () {
-    res.json({ status: 'success' });
+    res.status(200).json({ status: 'success' });
   });
 });
 
 router.put('/:id', function (req, res) {
-  // models.Item.findOne({
-  //   where: { id: req.params.id }
-  // }).then((item) => {
-  // });
-  
   let name = '';
+  
   models.Item.findById(req.params.id).then(item => {
     name = item.img_url;
   })
@@ -100,7 +95,7 @@ router.put('/:id', function (req, res) {
     let file = req.files['image'];
     file.mv('files/' + file.name, function (err) {
       if (err)
-        return res.json(err);
+        return res.status(500).json(err);
     });
     name = 'files/' + file.name;
   }
@@ -116,10 +111,10 @@ router.put('/:id', function (req, res) {
       where: { id: req.params.id }
     }
   ).then(function (result) {
-    console.log(result);
-    res.json({ status: 'success' });
+    // console.log(result);
+    res.status(200).json({ status: 'success' });
   }).error(function (err) {
-    res.json(err);
+    res.status(500).json(err);
   });
 });
 
